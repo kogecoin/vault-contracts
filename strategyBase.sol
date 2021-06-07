@@ -1181,18 +1181,6 @@ abstract contract BaseStrategy is Ownable {
         IERC20(want).safeTransfer(jar, _amount);
     }
 
-    // Withdraw funds, used to swap between strategies
-    function withdrawForSwap(uint256 _amount)
-        external
-        returns (uint256 balance)
-    {
-        require(msg.sender == jar, "!jar");
-        _withdrawSome(_amount);
-
-        balance = IERC20(want).balanceOf(address(this));
-
-        IERC20(want).safeTransfer(jar, balance);
-    }
 
     function _withdrawAll() internal {
         _withdrawSome(balanceOfPool());
@@ -1303,6 +1291,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
 
     address public rewards;
     uint256 public poolId;
+    bool public emergencyStatus = false;
 
     constructor(
         address _rewards,
@@ -1330,8 +1319,8 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
     }
 
     // **** Setters ****
-
     function deposit() public override {
+        require(emergencyStatus == false, "emergency withdrawal in process");
         uint256 _want = IERC20(want).balanceOf(address(this));
         if (_want > 0) {
             IERC20(want).safeApprove(rewards, 0);
@@ -1375,11 +1364,13 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
         if (_want > 0) {
             IERC20(want).safeTransfer(jar, _want);
         }
+
+        emergencyStatus = true;
     }
 }
 
 
-abstract contract StrategyIronBase is BaseStrategyMasterChef {
+abstract contract StrategyFarmBase is BaseStrategyMasterChef {
 
     // Token addresses for MATIC
     address public constant titan = 0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A;
@@ -1495,14 +1486,14 @@ abstract contract StrategyIronBase is BaseStrategyMasterChef {
     }
 }
 
-contract StrategyIron is StrategyIronBase {
+contract StrategyBase is StrategyFarmBase {
     // Token addresses
     address public IRON_MASTER_CHEF = 0x65430393358e55A658BcdE6FF69AB28cF1CbB77a;
     address public IRON_MATIC_LP = 0xA79983Daf2A92c2C902cD74217Efe3D8AF9Fba2a;
 
     constructor()
         public
-        StrategyIronBase(
+        StrategyFarmBase(
             IRON_MASTER_CHEF,
             IRON_MATIC_LP,
             msg.sender
@@ -1512,7 +1503,7 @@ contract StrategyIron is StrategyIronBase {
     // **** Views ****
 
     function getName() external override pure returns (string memory) {
-        return "StrategyTitanMatic";
+        return "StrategyBase";
     }
 
     function pairName() external pure returns (string memory) {

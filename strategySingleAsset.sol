@@ -1183,19 +1183,6 @@ abstract contract BaseStrategy is Ownable {
         IERC20(want).safeTransfer(jar, _amount);
     }
 
-    // Withdraw funds, used to swap between strategies
-    function withdrawForSwap(uint256 _amount)
-        external
-        returns (uint256 balance)
-    {
-        require(msg.sender == jar, "!jar");
-        _withdrawSome(_amount);
-
-        balance = IERC20(want).balanceOf(address(this));
-
-        IERC20(want).safeTransfer(jar, balance);
-    }
-
     function _withdrawAll() internal {
         _withdrawSome(balanceOfPool());
     }
@@ -1305,6 +1292,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
 
     address public rewards;
     uint256 public poolId;
+    bool public emergencyStatus = false;
 
     constructor(
         address _rewards,
@@ -1334,6 +1322,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
     // **** Setters ****
 
     function deposit() public override {
+        require(emergencyStatus == false, "emergency withdrawal in process");
         uint256 _want = IERC20(want).balanceOf(address(this));
         if (_want > 0) {
             IERC20(want).safeApprove(rewards, 0);
@@ -1377,11 +1366,13 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
         if (_want > 0) {
             IERC20(want).safeTransfer(jar, _want);
         }
+
+        emergencyStatus = true;
     }
 }
 
 
-abstract contract StrategySingleBase is BaseStrategyMasterChef {
+abstract contract StrategyFarmSingle is BaseStrategyMasterChef {
 
     // Addresses for the harvested and reward tokens
     address public constant rewardToken = 0xF4B0903774532AEe5ee567C02aaB681a81539e92;
@@ -1472,14 +1463,14 @@ abstract contract StrategySingleBase is BaseStrategyMasterChef {
     }
 }
 
-contract StrategyGajGaj is StrategySingleBase {
+contract StrategySingle is StrategyFarmSingle {
     // Token addresses
     address public Gaj_MASTER_CHEF = 0xb03f95E649724dF6bA575C2c6eF062766a7fDb51;
     address public Want_Token = 0xF4B0903774532AEe5ee567C02aaB681a81539e92;
 
     constructor()
         public
-        StrategySingleBase(
+        StrategyFarmSingle(
             Gaj_MASTER_CHEF,
             Want_Token,
             msg.sender

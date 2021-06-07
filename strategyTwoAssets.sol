@@ -1181,19 +1181,6 @@ abstract contract BaseStrategy is Ownable {
         IERC20(want).safeTransfer(jar, _amount);
     }
 
-    // Withdraw funds, used to swap between strategies
-    function withdrawForSwap(uint256 _amount)
-        external
-        returns (uint256 balance)
-    {
-        require(msg.sender == jar, "!jar");
-        _withdrawSome(_amount);
-
-        balance = IERC20(want).balanceOf(address(this));
-
-        IERC20(want).safeTransfer(jar, balance);
-    }
-
     function _withdrawAll() internal {
         _withdrawSome(balanceOfPool());
     }
@@ -1303,6 +1290,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
 
     address public rewards;
     uint256 public poolId;
+    bool public emergencyStatus = false;
 
     constructor(
         address _rewards,
@@ -1332,6 +1320,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
     // **** Setters ****
 
     function deposit() public override {
+        require(emergencyStatus == false, "emergency withdrawal in process");
         uint256 _want = IERC20(want).balanceOf(address(this));
         if (_want > 0) {
             IERC20(want).safeApprove(rewards, 0);
@@ -1375,11 +1364,13 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
         if (_want > 0) {
             IERC20(want).safeTransfer(jar, _want);
         }
+
+        emergencyStatus = true;
     }
 }
 
 
-abstract contract StrategyIronBase is BaseStrategyMasterChef {
+abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
 
     // Token addresses for the harvested and rewards tokens
     address public constant titan = 0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A;
@@ -1499,14 +1490,14 @@ abstract contract StrategyIronBase is BaseStrategyMasterChef {
     }
 }
 
-contract StrategyIronUSDC is StrategyIronBase {
+contract StrategyTwoAssets is StrategyFarmTwoAssets {
     // Token addresses
     address public IRON_MASTER_CHEF = 0x65430393358e55A658BcdE6FF69AB28cF1CbB77a;
     address public IRON_USDC_LP = 0x85dE135fF062Df790A5f20B79120f17D3da63b2d;
 
     constructor()
         public
-        StrategyIronBase(
+        StrategyFarmTwoAssets(
             IRON_MASTER_CHEF,
             IRON_USDC_LP,
             msg.sender
@@ -1516,7 +1507,7 @@ contract StrategyIronUSDC is StrategyIronBase {
     // **** Views ****
 
     function getName() external override pure returns (string memory) {
-        return "StrategyIronUSDC";
+        return "StrategyTwoAssets";
     }
 
     function pairName() external pure returns (string memory) {
