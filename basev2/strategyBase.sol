@@ -15,7 +15,7 @@ abstract contract BaseStrategy is Ownable {
 
     // Tokens
     address public want; //The LP token, Harvest calls this "rewardToken"
-    address public harvestedToken; //The token we harvest
+    address public harvestedToken; //The token we harvest, will add support for multiple tokens in v2
 
     // User accounts
     address public strategist; //The address the performance fee is sent to
@@ -271,6 +271,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
     address public constant rewardToken = 0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A;
     address public constant token1 = 0xD86b5923F3AD7b585eD81B448170ae026c65ae9a;
     address public constant token2 = 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174;
+    address public constant feeToken = 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174;
     address public multiHarvest = 0x0000000000000000000000000000000000000000;
 
     // Router
@@ -283,6 +284,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
     uint256 public constant keepFXSmax = 10000;
 
     // Uniswap swap paths
+    address[] public rewardToken_feeToken_path;
     address[] public rewardToken_token1_path;
     address[] public rewardToken_token2_path;
 
@@ -300,6 +302,10 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
             rewardToken
         )
     {
+        rewardToken_feeToken_path = new address[](2);
+        rewardToken_feeToken_path[0] = rewardToken;
+        rewardToken_feeToken_path[1] = feeToken;
+
         rewardToken_token1_path = new address[](2);
         rewardToken_token1_path[0] = rewardToken;
         rewardToken_token1_path[1] = token1;
@@ -325,12 +331,27 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
         harvestCutoff = newCutoff;
     }
 
-    function collect_fee(address feeToken) internal {
-        //Send performance fee to strategist
-        uint256 _feeToken = IERC20(feeToken).balanceOf(address(this));
-        if (_feeToken > 0) {
-            uint256 performanceFee = _feeToken.mul(keepFXS).div(keepFXSmax);
+    function collect_fee(address rewardTokenAddr, address[] memory reward_to_fee, address feeRouter) internal {
+        // Get reward balance
+        uint256 _rewardToken = IERC20(rewardTokenAddr).balanceOf(address(this));
+        
+        // If reward has balance, calculate fee
+        if (_rewardToken > 0) {
+    
+            // Get performance fee in terms of reward token
+            uint256 performanceFee = _rewardToken.mul(keepFXS).div(keepFXSmax);
+            
+            // If there is a performance fee, send to strategist
             if (performanceFee>0) {
+        
+                // If need to swap performance fee to another token, do the swap first
+                address feeTokenAddr = reward_to_fee[reward_to_fee.length-1];
+                if (reward_to_fee.length>1){
+                    _swapUniswapWithPath(reward_to_fee, performanceFee, feeRouter);
+                    performanceFee = IERC20(feeTokenAddr).balanceOf(address(this));
+                }
+
+                // Send fee to strategist
                 IERC20(feeToken).safeTransfer(
                     strategist,
                     performanceFee
@@ -351,7 +372,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
         uint256 _rewardBalance = IERC20(rewardToken).balanceOf(address(this));
         if (_rewardBalance > harvestCutoff){
             // Collect fee
-            collect_fee(rewardToken);
+            collect_fee(rewardToken, rewardToken_feeToken_path, currentRouter);
 
             // Swap reward to want
             _swapUniswapWithPath(rewardToken_token1_path, _rewardBalance.div(2), currentRouter);
