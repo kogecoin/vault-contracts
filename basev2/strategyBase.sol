@@ -347,7 +347,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
                     performanceFee = IERC20(feeTokenAddr).balanceOf(address(this));
                 }
                 // Send fee to strategist
-                IERC20(feeToken).safeTransfer(
+                IERC20(feeTokenAddr).safeTransfer(
                     strategist,
                     performanceFee
                 );
