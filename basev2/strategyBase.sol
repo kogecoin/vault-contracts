@@ -331,7 +331,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
         harvestCutoff = newCutoff;
     }
 
-    function collect_fee(address rewardTokenAddr, address[] memory reward_to_fee, address feeRouter) internal {
+    function collect_fee(address rewardTokenAddr, address feeRouter) internal {
         // Get reward balance
         uint256 _rewardToken = IERC20(rewardTokenAddr).balanceOf(address(this));
         // If reward has balance, calculate fee
@@ -341,9 +341,9 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
             // If there is a performance fee, send to strategist
             if (performanceFee>0) {
                 // If need to swap performance fee to another token, do the swap first
-                address feeTokenAddr = reward_to_fee[reward_to_fee.length-1];
-                if (reward_to_fee.length>1){
-                    _swapUniswapWithPath(reward_to_fee, performanceFee, feeRouter);
+                address feeTokenAddr = rewardToken_feeToken_path[rewardToken_feeToken_path.length-1];
+                if (rewardToken_feeToken_path.length>1){
+                    _swapUniswapWithPath(rewardToken_feeToken_path, performanceFee, feeRouter);
                     performanceFee = IERC20(feeTokenAddr).balanceOf(address(this));
                 }
                 // Send fee to strategist
@@ -367,7 +367,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
         uint256 _rewardBalance = IERC20(rewardToken).balanceOf(address(this));
         if (_rewardBalance > harvestCutoff){
             // Collect fee
-            collect_fee(rewardToken, rewardToken_feeToken_path, currentRouter);
+            collect_fee(rewardToken, currentRouter);
 
             // Swap reward to want
             _swapUniswapWithPath(rewardToken_token1_path, _rewardBalance.div(2), currentRouter);
