@@ -334,23 +334,18 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
     function collect_fee(address rewardTokenAddr, address[] memory reward_to_fee, address feeRouter) internal {
         // Get reward balance
         uint256 _rewardToken = IERC20(rewardTokenAddr).balanceOf(address(this));
-        
         // If reward has balance, calculate fee
         if (_rewardToken > 0) {
-    
             // Get performance fee in terms of reward token
             uint256 performanceFee = _rewardToken.mul(keepFXS).div(keepFXSmax);
-            
             // If there is a performance fee, send to strategist
             if (performanceFee>0) {
-        
                 // If need to swap performance fee to another token, do the swap first
                 address feeTokenAddr = reward_to_fee[reward_to_fee.length-1];
                 if (reward_to_fee.length>1){
                     _swapUniswapWithPath(reward_to_fee, performanceFee, feeRouter);
                     performanceFee = IERC20(feeTokenAddr).balanceOf(address(this));
                 }
-
                 // Send fee to strategist
                 IERC20(feeToken).safeTransfer(
                     strategist,
