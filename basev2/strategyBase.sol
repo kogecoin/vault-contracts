@@ -355,7 +355,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
         }
     }
 
-    //Harvest needs to be called twice because deposit and withdraw have the nonReentrant modifier, so I cannot claim and deposit in the same tx
+    //Harvest rewards and re-deposit into farm
     function harvest() public override nonReentrant {
         //prevent unauthorized smart contracts from calling harvest()
         require(msg.sender == tx.origin || msg.sender == owner() || msg.sender == strategist || msg.sender == multiHarvest || msg.sender == jar, "not authorized");
