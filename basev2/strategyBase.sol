@@ -369,10 +369,13 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
             // Collect fee
             collect_fee(rewardToken, currentRouter);
 
-            // Swap reward to want
-            _swapUniswapWithPath(rewardToken_token1_path, _rewardBalance.div(2), currentRouter);
+            // Swap 1/2 of reward to token1
             uint256 _rewardBalancePost = IERC20(rewardToken).balanceOf(address(this));
-            _swapUniswapWithPath(rewardToken_token2_path, _rewardBalancePost, currentRouter);
+            _swapUniswapWithPath(rewardToken_token1_path, _rewardBalancePost.div(2), currentRouter);
+            
+            // Swap remaining to token2 
+            uint256 _rewardBalancePost2 = IERC20(rewardToken).balanceOf(address(this));
+            _swapUniswapWithPath(rewardToken_token2_path, _rewardBalancePost2, currentRouter);
 
             // Add liquidity
             _addLiquidityToDex(token1, token2,currentRouter);
