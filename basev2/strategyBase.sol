@@ -15,7 +15,7 @@ abstract contract BaseStrategy is Ownable {
 
     // Tokens
     address public want; //The LP token, Harvest calls this "rewardToken"
-    address public harvestedToken; //The token we harvest, will add support for multiple tokens in v2
+    address public harvestedToken; //The token we harvest
 
     // User accounts
     address public strategist; //The address the performance fee is sent to
