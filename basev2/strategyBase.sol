@@ -341,13 +341,12 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
             // If there is a performance fee, send to strategist
             if (performanceFee>0) {
                 // If need to swap performance fee to another token, do the swap first
-                address feeTokenAddr = rewardToken_feeToken_path[rewardToken_feeToken_path.length-1];
-                if (rewardToken_feeToken_path.length>1){
+                if (rewardToken!=feeToken){
                     _swapUniswapWithPath(rewardToken_feeToken_path, performanceFee, feeRouter);
-                    performanceFee = IERC20(feeTokenAddr).balanceOf(address(this));
+                    performanceFee = IERC20(feeToken).balanceOf(address(this));
                 }
                 // Send fee to strategist
-                IERC20(feeTokenAddr).safeTransfer(
+                IERC20(feeToken).safeTransfer(
                     strategist,
                     performanceFee
                 );
