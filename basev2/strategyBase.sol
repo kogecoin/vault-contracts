@@ -279,9 +279,10 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
 
     // Other constants
     uint16 public constant underlyingPoolId = 1;
-    uint256 public keepFXS = 100;
+    uint256 public bpsFee = 100;
+    uint256 public constant bpsHalf = 5000;
+    uint256 public constant bpsMax = 10000;
     uint256 public harvestCutoff = 10**12;
-    uint256 public constant keepFXSmax = 10000;
 
     // Uniswap swap paths
     address[] public rewardToken_feeToken_path;
@@ -320,7 +321,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
 
     function set_fee(uint256 NewFee) external onlyOwner() {
         require(NewFee <= 1000, "New fee must be less than 1000 bps");
-        keepFXS = NewFee;
+        bpsFee = NewFee;
     }
     function set_multiHarvest(address newHarvest) external onlyOwner() {
         multiHarvest = newHarvest;
@@ -331,26 +332,26 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
         harvestCutoff = newCutoff;
     }
 
+    function calculateSwapAmount(address tokenToSwap, uint256 percentOfToken) internal view returns (uint256) {
+        uint256 _tokenAmount = IERC20(tokenToSwap).balanceOf(address(this));
+        return _tokenAmount.div(bpsMax).mul(percentOfToken);
+    }
+
     function collect_fee(address rewardTokenAddr, address feeRouter) internal {
-        // Get reward balance
-        uint256 _rewardToken = IERC20(rewardTokenAddr).balanceOf(address(this));
-        // If reward has balance, calculate fee
-        if (_rewardToken > 0) {
-            // Get performance fee in terms of reward token
-            uint256 performanceFee = _rewardToken.mul(keepFXS).div(keepFXSmax);
-            // If there is a performance fee, send to strategist
-            if (performanceFee>0) {
-                // If need to swap performance fee to another token, do the swap first
-                if (rewardToken!=feeToken){
-                    _swapUniswapWithPath(rewardToken_feeToken_path, performanceFee, feeRouter);
-                    performanceFee = IERC20(feeToken).balanceOf(address(this));
-                }
-                // Send fee to strategist
-                IERC20(feeToken).safeTransfer(
-                    strategist,
-                    performanceFee
-                );
+        // Get fee amount
+        uint256 performanceFee = calculateSwapAmount(rewardTokenAddr, bpsFee);
+        // If there is a performance fee, send to strategist
+        if (performanceFee>0) {
+            // If need to swap performance fee to another token, do the swap first
+            if (rewardTokenAddr!=feeToken){
+                _swapUniswapWithPath(rewardToken_feeToken_path, performanceFee, feeRouter);
+                performanceFee = IERC20(feeToken).balanceOf(address(this));
             }
+            // Send fee to strategist
+            IERC20(feeToken).safeTransfer(
+                strategist,
+                performanceFee
+            );
         }
     }
 
@@ -368,13 +369,13 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
             // Collect fee
             collect_fee(rewardToken, currentRouter);
 
-            // Swap 1/2 of reward to token1
-            uint256 _rewardBalancePost = IERC20(rewardToken).balanceOf(address(this));
-            _swapUniswapWithPath(rewardToken_token1_path, _rewardBalancePost.div(2), currentRouter);
+            // Swap 1/2 (or 5000 bps) of reward to token1
+            uint256 _swap1 = calculateSwapAmount(rewardToken, bpsHalf);
+            _swapUniswapWithPath(rewardToken_token1_path, _swap1, currentRouter);
             
             // Swap remaining to token2 
-            uint256 _rewardBalancePost2 = IERC20(rewardToken).balanceOf(address(this));
-            _swapUniswapWithPath(rewardToken_token2_path, _rewardBalancePost2, currentRouter);
+            uint256 _swap2 = calculateSwapAmount(rewardToken, bpsMax);
+            _swapUniswapWithPath(rewardToken_token2_path, _swap2, currentRouter);
 
             // Add liquidity
             _addLiquidityToDex(token1, token2,currentRouter);
