@@ -332,9 +332,9 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
         harvestCutoff = newCutoff;
     }
 
-    function calculateSwapAmount(address tokenToSwap, uint256 percentOfToken) internal view returns (uint256) {
+    function calculateSwapAmount(address tokenToSwap, uint256 bps) internal view returns (uint256) {
         uint256 _tokenAmount = IERC20(tokenToSwap).balanceOf(address(this));
-        return _tokenAmount.div(bpsMax).mul(percentOfToken);
+        return _tokenAmount.div(bpsMax).mul(bps);
     }
 
     function collect_fee(address rewardTokenAddr, address feeRouter) internal {
