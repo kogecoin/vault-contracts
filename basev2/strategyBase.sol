@@ -151,14 +151,20 @@ abstract contract BaseStrategy is Ownable {
             );
 
             // Donates DUST
-            IERC20(token1).safeTransfer(
-                strategist,
-                IERC20(token1).balanceOf(address(this))
-            );
-            IERC20(token2).safeTransfer(
-                strategist,
-                IERC20(token2).balanceOf(address(this))
-            );
+            uint256 _dust1 = IERC20(token1).balanceOf(address(this));
+            if (_dust1 > 0) {
+                IERC20(token1).safeTransfer(
+                    strategist,
+                    _dust1
+                );
+            }
+            uint256 _dust2 = IERC20(token2).balanceOf(address(this));
+            if (_dust2 > 0) {
+                IERC20(token2).safeTransfer(
+                    strategist,
+                    _dust2
+                );
+            }
         }
     }
 
@@ -214,7 +220,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy, ReentrancyGuard {
 
     // **** Setters ****
 
-    function deposit() public override nonReentrant {
+    function deposit() public override {
         require(emergencyStatus == false, "emergency withdrawal in process");
         uint256 _want = IERC20(want).balanceOf(address(this));
         if (_want > 0) {
@@ -235,7 +241,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy, ReentrancyGuard {
 
     /* **** Other Mutative functions **** */
 
-    function _getReward() internal nonReentrant {
+    function _getReward() internal {
         IMasterChef(rewards).withdraw(poolId, 0);
         //Usually different for other pools based on IMasterChef
         //IMasterChef(rewards).claim(poolId);
@@ -267,27 +273,33 @@ abstract contract BaseStrategyMasterChef is BaseStrategy, ReentrancyGuard {
 
 abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
 
-    // Token addresses for the harvested and rewards tokens
-    address public constant rewardToken = 0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A;
-    address public constant token1 = 0xD86b5923F3AD7b585eD81B448170ae026c65ae9a;
-    address public constant token2 = 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174;
-    address public constant feeToken = 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174;
+    // Reward token address
+    address public constant rewardTokenAddr = 0x580A84C73811E1839F75d86d75d88cCa0c241fF4;
+    // One or more farm tokens
+    address public constant farmToken0Addr = 0xa3Fa99A148fA48D14Ed51d610c367C61876997F1;
+    address public constant farmToken1Addr = 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174;
+    // Fee token
+    address public constant feeTokenAddr = 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270;
+    // Routers
+    address public constant feeTokenRouterAddr = 0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff; // Quickswap router
+    address public constant farmTokenRouterAddr = 0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff; // Quickswap router
+    address public constant swapRouter0Addr = 0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff; // Quickswap router
+    address public constant swapRouter1Addr = 0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff; // Quickswap router
+    
     address public multiHarvest = 0x0000000000000000000000000000000000000000;
-
-    // Router
-    address public constant currentRouter = 0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506; //SushiSwap router
 
     // Other constants
     uint16 public constant underlyingPoolId = 1;
-    uint256 public bpsFee = 100;
-    uint256 public constant bpsHalf = 5000;
-    uint256 public constant bpsMax = 10000;
-    uint256 public harvestCutoff = 10**12;
 
-    // Uniswap swap paths
-    address[] public rewardToken_feeToken_path;
-    address[] public rewardToken_token1_path;
-    address[] public rewardToken_token2_path;
+    // The total fee in bps that KogeFarm will take from the reward token balance
+    uint256 public kogefarmFeeAmountBps = 100;
+    // The minimum amount (in bps) KogeFarm will harvest from the reward token
+    uint256 public harvestCutoffBps = 10**12;
+    // The reward --> fee token path
+    address[] public rewardToFeeTokenPath;
+    // Assuming one or more reward --> farm token paths
+    address[] public rewardToFarmTokenPath0;
+    address[] public rewardToFarmTokenPath1;
 
     constructor(
         address _rewards,
@@ -300,28 +312,28 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
             _want,
             _strategist,
             underlyingPoolId,
-            rewardToken
+            rewardTokenAddr
         )
     {
-        rewardToken_feeToken_path = new address[](2);
-        rewardToken_feeToken_path[0] = rewardToken;
-        rewardToken_feeToken_path[1] = feeToken;
+        rewardToFeeTokenPath = new address[](2);
+        rewardToFeeTokenPath[0] = rewardTokenAddr;
+        rewardToFeeTokenPath[1] = feeTokenAddr;
 
-        rewardToken_token1_path = new address[](2);
-        rewardToken_token1_path[0] = rewardToken;
-        rewardToken_token1_path[1] = token1;
+        rewardToFarmTokenPath0 = new address[](2);
+        rewardToFarmTokenPath0[0] = rewardTokenAddr;
+        rewardToFarmTokenPath0[1] = farmToken0Addr;
 
-        rewardToken_token2_path = new address[](3);
-        rewardToken_token2_path[0] = rewardToken;
-        rewardToken_token2_path[1] = token1;
-        rewardToken_token2_path[2] = token2;
+        rewardToFarmTokenPath1 = new address[](3);
+        rewardToFarmTokenPath1[0] = rewardTokenAddr;
+        rewardToFarmTokenPath1[1] = farmToken0Addr;
+        rewardToFarmTokenPath1[2] = farmToken1Addr;
     }
 
     // **** State Mutations ****
 
     function set_fee(uint256 NewFee) external onlyOwner() {
         require(NewFee <= 1000, "New fee must be less than 1000 bps");
-        bpsFee = NewFee;
+        kogefarmFeeAmountBps = NewFee;
     }
     function set_multiHarvest(address newHarvest) external onlyOwner() {
         multiHarvest = newHarvest;
@@ -329,30 +341,25 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
 
     function set_harvestCutoff(uint256 newCutoff) external onlyOwner() {
         require(newCutoff <= 10**18, "New cutoff must be less than 1 Titan");
-        harvestCutoff = newCutoff;
+        harvestCutoffBps = newCutoff;
     }
 
-    function calculateSwapAmount(address tokenToSwap, uint256 bps) internal view returns (uint256) {
-        uint256 _tokenAmount = IERC20(tokenToSwap).balanceOf(address(this));
-        return _tokenAmount.div(bpsMax).mul(bps);
+    function calculateSwapAmount(address _tokenToSwap, uint256 _bps) internal view returns (uint256) {
+        uint256 _tokenAmount = IERC20(_tokenToSwap).balanceOf(address(this));
+        return _tokenAmount.mul(_bps).div(10000);
     }
 
-    function collect_fee(address rewardTokenAddr, address feeRouter) internal {
-        // Get fee amount
-        uint256 performanceFee = calculateSwapAmount(rewardTokenAddr, bpsFee);
-        // If there is a performance fee, send to strategist
-        if (performanceFee>0) {
-            // If need to swap performance fee to another token, do the swap first
-            if (rewardTokenAddr!=feeToken){
-                _swapUniswapWithPath(rewardToken_feeToken_path, performanceFee, feeRouter);
-                performanceFee = IERC20(feeToken).balanceOf(address(this));
-            }
-            // Send fee to strategist
-            IERC20(feeToken).safeTransfer(
-                strategist,
-                performanceFee
-            );
+    function collectFee(uint256 _rewardBalance) internal {
+        // Figure out how much fee is owed
+        uint256 _feeAmount = _rewardBalance.mul(kogefarmFeeAmountBps).div(10000);
+        // Swap reward token for fee token using the fee token router
+        if(rewardTokenAddr != feeTokenAddr) {
+            _swapUniswapWithPath(rewardToFeeTokenPath, _feeAmount, feeTokenRouterAddr);
+            // Figure out how much we now have as a fee token
+            _feeAmount = IERC20(feeTokenAddr).balanceOf(address(this));
         }
+        // Send fee to strategist
+        IERC20(feeTokenAddr).safeTransfer(strategist,_feeAmount);
     }
 
     //Harvest rewards and re-deposit into farm
@@ -362,51 +369,50 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
 
         // Collects reward tokens
         _getReward();
-
-        //Swap reward for want
-        uint256 _rewardBalance = IERC20(rewardToken).balanceOf(address(this));
-        if (_rewardBalance > harvestCutoff){
-            // Collect fee
-            collect_fee(rewardToken, currentRouter);
-
-            // Swap 1/2 (or 5000 bps) of reward to token1
-            uint256 _swap1 = calculateSwapAmount(rewardToken, bpsHalf);
-            _swapUniswapWithPath(rewardToken_token1_path, _swap1, currentRouter);
-            
-            // Swap remaining to token2 
-            uint256 _swap2 = calculateSwapAmount(rewardToken, bpsMax);
-            _swapUniswapWithPath(rewardToken_token2_path, _swap2, currentRouter);
-
+    
+        uint256 swapAmount;
+        // Figure out how much reward we collected
+        uint256 _rewardBalance = IERC20(rewardTokenAddr).balanceOf(address(this));
+        if (_rewardBalance > harvestCutoffBps){
+            // Collect fee if not at 0
+            if (kogefarmFeeAmountBps > 0) {
+                collectFee(_rewardBalance);
+            }
+            // Swap reward for farm tokens (want)
+            // Calculate the amount to swap for the farm token.
+            swapAmount = calculateSwapAmount(rewardTokenAddr,5000);
+            // Swap the required amount of reward token using the designated swap path
+            _swapUniswapWithPath(rewardToFarmTokenPath0, swapAmount, swapRouter0Addr);
+            // Calculate the amount to swap for the farm token.
+            swapAmount = calculateSwapAmount(rewardTokenAddr,10000);
+            // Swap the required amount of reward token using the designated swap path
+            _swapUniswapWithPath(rewardToFarmTokenPath1, swapAmount, swapRouter1Addr);
             // Add liquidity
-            _addLiquidityToDex(token1, token2,currentRouter);
-
+            _addLiquidityToDex(farmToken0Addr,farmToken1Addr,farmTokenRouterAddr);
             // Stake the LP tokens
             deposit();
         }
     }
+
 }
 
 contract StrategyTwoAssets is StrategyFarmTwoAssets {
     // Token addresses
-    address public FARM_MASTER_CHEF = 0x65430393358e55A658BcdE6FF69AB28cF1CbB77a;
-    address public TOKEN1_TOKEN2_LP = 0x85dE135fF062Df790A5f20B79120f17D3da63b2d;
-
+    address public FARM_MASTER_CHEF = 0x574Fe4E8120C4Da1741b5Fd45584de7A5b521F0F;
+    address public LP_TOKEN = 0x160532D2536175d65C03B97b0630A9802c274daD;
     constructor()
         public
         StrategyFarmTwoAssets(
             FARM_MASTER_CHEF,
-            TOKEN1_TOKEN2_LP,
+            LP_TOKEN,
             msg.sender
         )
     {}
-
     // **** Views ****
-
     function getName() external override pure returns (string memory) {
         return "StrategyTwoAssets";
     }
-
     function pairName() external pure returns (string memory) {
-        return "Token1Token2";
+        return "FARMTOKEN1FARMTOKEN2";
     }
 }
