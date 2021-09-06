@@ -152,7 +152,7 @@ abstract contract JarBase is ERC20, Ownable, ReentrancyGuard {
     // A view function that makes it easier for the UI to display LPs of users
     function getRatio() public view returns (uint256) {
         if (totalSupply() == 0) {
-            return 10**18;
+            return 1e18;
         }
         return balance().mul(1e18).div(totalSupply());
     }
