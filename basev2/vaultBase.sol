@@ -9,25 +9,13 @@ import "./interfaces/IStrategy.sol";
 
 
 /* MasterChef contract */
-contract MasterChef {
-    using SafeMath for uint256;
-    using SafeERC20 for IERC20;
+interface IMasterChef {
 
     // Info of each pool.
-    struct PoolInfo {
-        IERC20 lpToken;           // Address of LP token contract.
-        uint256 allocPoint;       // How many allocation points assigned to this pool. EGGs to distribute per block.
-        uint256 lastRewardBlock;  // Last block number that EGGs distribution occurs.
-        uint256 accEggPerShare;   // Accumulated EGGs per share, times 1e12. See below.
-        uint16 depositFeeBP;      // Make sure the underlying vault defines this is basis points in an immutable way
-    }
-
-    // Info of each pool.
-    PoolInfo[] public poolInfo;
+    function poolInfo(uint256 pid) external returns (IERC20 lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accEggPershare, uint16 depositFeeBP);
 
     // Withdrawal penalty
-    uint256 public withdrawPenalty; // Make sure the underlying vault defines this is basis points in an immutable way
-
+    function withdrawPenalty() external returns (uint256);
 }
 
 
@@ -93,9 +81,9 @@ abstract contract JarBase is ERC20, Ownable, ReentrancyGuard {
         //Grab deposit fee from underlying farm, if available.
         address masterChefAddr = IStrategy(strategy).rewards();
         uint16 underlyingPoolId = IStrategy(strategy).underlyingPoolId();
-        MasterChef underlyingMC = MasterChef(masterChefAddr);
+        
         // Read pool info on deposit fee
-        (, , , , uint256 depositFee) = underlyingMC.poolInfo(underlyingPoolId);
+        (, , , , uint256 depositFee) = IMasterChef(masterChefAddr).poolInfo(underlyingPoolId);
         // Adjust for deposit fee
         if(depositFee > 0) {
             uint256 fee = shares.mul(depositFee).div(keepMax);
@@ -137,9 +125,8 @@ abstract contract JarBase is ERC20, Ownable, ReentrancyGuard {
         // If withdrawal penalty, subtract before transferring
         // Otherwise, just comment out this section
         // address masterChefAddr = IStrategy(strategy).rewards();
-        // MasterChef underlyingMC = MasterChef(masterChefAddr);
         // Read pool info on withdrawal fee
-        // uint256 withdrawPenalty = underlyingMC.withdrawPenalty();
+        // uint256 withdrawPenalty = IMasterChef(masterChefAddr).withdrawPenalty();
         // bool emergencyStatus = IStrategy(strategy).emergencyStatus();
         // if (withdrawPenalty>0 && emergencyStatus==false) {
         //    uint256 WithdrawalFee = r.mul(withdrawPenalty).div(keepMax);
