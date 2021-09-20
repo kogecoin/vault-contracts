@@ -7,29 +7,67 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.4
 import "./interfaces/IStrategy.sol";
 
 
+/**
+// OpenZeppelin pausable: https://github.com/ConsenSysMesh/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol
 
-/* MasterChef contract */
-interface IMasterChef {
+ * @title Pausable
+ * @dev Base contract which allows children to implement an emergency stop mechanism.
+ */
+contract Pausable is Ownable {
+  event Pause();
+  event Unpause();
 
-    // Info of each pool.
-    function poolInfo(uint256 pid) external returns (IERC20 lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accEggPershare, uint16 depositFeeBP);
+  bool public paused = false;
 
-    // Withdrawal penalty
-    function withdrawPenalty() external returns (uint256);
+
+  /**
+   * @dev Modifier to make a function callable only when the contract is not paused.
+   */
+  modifier whenNotPaused() {
+    require(!paused);
+    _;
+  }
+
+  /**
+   * @dev Modifier to make a function callable only when the contract is paused.
+   */
+  modifier whenPaused() {
+    require(paused);
+    _;
+  }
+
+  /**
+   * @dev called by the owner to pause, triggers stopped state
+   */
+  function pause() onlyOwner whenNotPaused public {
+    paused = true;
+    emit Pause();
+  }
+
+  /**
+   * @dev called by the owner to unpause, returns to normal state
+   */
+  function unpause() onlyOwner whenPaused public {
+    paused = false;
+    emit Unpause();
+  }
 }
 
 
+/* JarBase contract */ 
 
-
-abstract contract JarBase is ERC20, Ownable, ReentrancyGuard {
+abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;
 
-    IERC20 public token;
-    address public strategy;
+    IERC20 public immutable token;
+    address public immutable strategy;
     mapping (address => uint256) private lastTimeStaked;
     uint256 public constant keepMax = 10000;
+
+    event Deposit(address indexed _from, uint256 _value);
+    event Withdraw(address indexed _from, uint256 _value);
 
     constructor(IStrategy _strategy, string memory name, string memory symbol)
         public
@@ -41,6 +79,10 @@ abstract contract JarBase is ERC20, Ownable, ReentrancyGuard {
         strategy = address(_strategy);
     }
 
+    modifier onlyEOA() {
+        require(msg.sender == tx.origin && !address(msg.sender).isContract(), "no contracts"); 
+        _;
+    }
 
     function transfer(address recipient, uint256 amount) public override returns (bool)
     {
@@ -55,53 +97,46 @@ abstract contract JarBase is ERC20, Ownable, ReentrancyGuard {
             );
     }
 
-    function depositAll() external nonReentrant {
+    function depositAll() external {
         deposit(token.balanceOf(msg.sender));
     }
 
-    function deposit(uint256 _amount) public nonReentrant {
-        require(msg.sender == tx.origin, "no contracts");
+    function deposit(uint256 _amount) public nonReentrant whenNotPaused onlyEOA {
         lastTimeStaked[msg.sender] = now;
 
         IStrategy(strategy).harvest();
-
+        
+        // Calculate initial pool balance
         uint256 _pool = balance();
-        uint256 _before = token.balanceOf(address(this));
-        token.safeTransferFrom(msg.sender, address(this), _amount);
-        uint256 _after = token.balanceOf(address(this));
-        _amount = _after.sub(_before); // Additional check for deflationary tokens
+        
+        // Transfer token to strategy and calculate amount to stake
+        uint256 _before = token.balanceOf(strategy);
+        token.safeTransferFrom(msg.sender, strategy, _amount);
+        uint256 _after = token.balanceOf(strategy);
+        uint256 _toDeposit = _before.sub(_after); // Additional check for deflationary tokens or deposit fees
+        
+        // Stake and calculate pool balance after
+        IStrategy(strategy).jarDeposit(_toDeposit);
+        uint256 _afterPool = balance();
+        uint256 _newStaked = _pool - _afterPool;
+    
+        // Compute share
         uint256 shares = 0;
         if (totalSupply() == 0) {
-            shares = _amount;
+            shares = _newStaked;
         } else {
-            shares = (_amount.mul(totalSupply())).div(_pool);
+            shares = (_newStaked.mul(totalSupply())).div(_pool);
         }
 
-        // If deposit penalty, grab it. Otherwise, just comment out this section.
-        //Grab deposit fee from underlying farm, if available.
-        address masterChefAddr = IStrategy(strategy).rewards();
-        uint16 underlyingPoolId = IStrategy(strategy).underlyingPoolId();
-        
-        // Read pool info on deposit fee
-        (, , , , uint256 depositFee) = IMasterChef(masterChefAddr).poolInfo(underlyingPoolId);
-        // Adjust for deposit fee
-        if(depositFee > 0) {
-            uint256 fee = shares.mul(depositFee).div(keepMax);
-            shares = shares.sub(fee);
-        }
         // Send share of pool
         _mint(msg.sender, shares);
-        earnAmount(_amount);
-    }
-
-    // Transfer tokens to strategy contract for earning
-    function earnAmount(uint256 _amount) internal {
-        token.safeTransfer(strategy, _amount);
-        IStrategy(strategy).deposit();
+        
+        // Emit event
+        emit Deposit(msg.sender, _amount);
     }
 
     // Withdraw all balanaces
-    function withdrawAll() external nonReentrant {
+    function withdrawAll() external {
         withdraw(balanceOf(msg.sender));
     }
 
@@ -118,26 +153,18 @@ abstract contract JarBase is ERC20, Ownable, ReentrancyGuard {
             uint256 _after = token.balanceOf(address(this));
             uint256 _diff = _after.sub(b);
             if (_diff < _withdraw) {
-                r = b.add(_diff);
+                r = _after;
             }
         }
 
-        // If withdrawal penalty, subtract before transferring
-        // Otherwise, just comment out this section
-        // address masterChefAddr = IStrategy(strategy).rewards();
-        // Read pool info on withdrawal fee
-        // uint256 withdrawPenalty = IMasterChef(masterChefAddr).withdrawPenalty();
-        // bool emergencyStatus = IStrategy(strategy).emergencyStatus();
-        // if (withdrawPenalty>0 && emergencyStatus==false) {
-        //    uint256 WithdrawalFee = r.mul(withdrawPenalty).div(keepMax);
-        //    r = r.sub(WithdrawalFee);
-        // }
-
         token.safeTransfer(msg.sender, r);
+
+        // Emit event
+        emit Withdraw(msg.sender, _shares);
     }
 
     // A view function that makes it easier for the UI to display LPs of users
-    function getRatio() public view returns (uint256) {
+    function getRatio() external view returns (uint256) {
         if (totalSupply() == 0) {
             return 1e18;
         }
@@ -145,7 +172,7 @@ abstract contract JarBase is ERC20, Ownable, ReentrancyGuard {
     }
 
     //Get last time staked
-    function getLastTimeStaked(address _address) public view returns (uint256) {
+    function getLastTimeStaked(address _address) external view returns (uint256) {
         return lastTimeStaked[_address];
     }
 }
@@ -156,7 +183,7 @@ contract vaultBase is JarBase {
     constructor(IStrategy _strategy)
         public
         JarBase(_strategy,
-            string(abi.encodePacked(_strategy.pairName(), "vault")),
+            string(abi.encodePacked(_strategy.pairName(), " ","vault")),
             string(abi.encodePacked("v", _strategy.pairName()))
         )
     {
