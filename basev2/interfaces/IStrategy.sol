@@ -9,7 +9,7 @@ interface IStrategy {
 
     function want() external view returns (address);
 
-    function deposit() external;
+    function jarDeposit(uint256) external;
 
     function underlyingPoolId() external view returns(uint16);
 
@@ -18,6 +18,8 @@ interface IStrategy {
     function withdrawAll() external returns (uint256);
 
     function balanceOf() external view returns (uint256);
+
+    function balanceOfPool() external view returns (uint256);
 
     function getHarvestable() external view returns (uint256);
 
