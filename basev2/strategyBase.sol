@@ -8,18 +8,21 @@ import "./interfaces/IJar.sol";
 import "./interfaces/IUniswap.sol";
 
 
-abstract contract BaseStrategy is Ownable {
+abstract contract BaseStrategy is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;
 
     // Tokens
-    address public want; //The LP token, Harvest calls this "rewardToken"
-    address public harvestedToken; //The token we harvest, will add support for multiple tokens in v2
+    address public immutable want; //The LP token, Harvest calls this "rewardToken"
+    address public immutable harvestedToken; //The token we harvest, will add support for multiple tokens in v2
 
     // User accounts
     address public strategist; //The address the performance fee is sent to
     address public jar;
+
+    // Events
+    event SetStrategist(address indexed _newStrategist);
 
     constructor(
         address _want,
@@ -60,13 +63,14 @@ abstract contract BaseStrategy is Ownable {
 
     function setStrategist(address _strategist) external onlyOwner {
         strategist = _strategist;
+        emit SetStrategist(_strategist);
     }
 
     // **** State mutations **** //
-    function deposit() public virtual;
+    function deposit(uint256 _amount) internal virtual;
 
     // Withdraw partial funds, normally used with a jar withdrawal
-    function withdraw(uint256 _amount) external {
+    function withdraw(uint256 _amount) external nonReentrant {
         require(msg.sender == jar, "!jar");
         uint256 _balance = IERC20(want).balanceOf(address(this));
         if (_balance < _amount) {
@@ -75,10 +79,6 @@ abstract contract BaseStrategy is Ownable {
         }
 
         IERC20(want).safeTransfer(jar, _amount);
-    }
-
-    function _withdrawAll() internal {
-        _withdrawSome(balanceOfPool());
     }
 
     function _withdrawSome(uint256 _amount) internal virtual returns (uint256);
@@ -102,7 +102,7 @@ abstract contract BaseStrategy is Ownable {
             0,
             path,
             address(this),
-            now.add(600)
+            now
         );
     }
 
@@ -122,7 +122,7 @@ abstract contract BaseStrategy is Ownable {
             0,
             path,
             address(this),
-            now.add(600)
+            now
         );
     }
 
@@ -147,7 +147,7 @@ abstract contract BaseStrategy is Ownable {
                 0,
                 0,
                 address(this),
-                now + 600
+                now
             );
 
             // Donates DUST
@@ -177,21 +177,25 @@ interface IMasterChef {
     function deposit(uint256 _pid, uint256 _amount) external;
     function withdraw(uint256 _pid, uint256 _amount) external;
     function emergencyWithdraw(uint256 _pid) external;
-    function exit(uint256 _pid) external;
 
     function userInfo(uint256 _pid, address _user) external view returns(uint256, uint256);
     function balanceOf(uint256 _pid, address _user) external view returns (uint256);
-    function earned(uint256 _pid, address _user) external view returns (uint256);
-    function totalSupply(uint256 _pid) external view returns (uint256);
+    function pending(uint256 _pid, address _user) external view returns (uint256);
 }
 
 // Base contract for MasterChef/SakeMaster/etc rewards contract interfaces
 
-abstract contract BaseStrategyMasterChef is BaseStrategy, ReentrancyGuard {
+abstract contract BaseStrategyMasterChef is BaseStrategy {
 
-    address public rewards;
-    uint256 public poolId;
+    address public immutable rewards;
+    uint256 public immutable poolId;
     bool public emergencyStatus = false;
+    
+    // Events
+    event SetFee(uint256 value);
+    event SetMultiHarvest(address indexed _to);
+    event SetHarvestCutoff(uint256 value);
+    event Harvested(address indexed _from);
 
     constructor(
         address _rewards,
@@ -215,19 +219,24 @@ abstract contract BaseStrategyMasterChef is BaseStrategy, ReentrancyGuard {
     }
 
     function getHarvestable() external override view returns (uint256) {
-        return IMasterChef(rewards).earned(poolId, address(this));
+        return IMasterChef(rewards).pending(poolId, address(this));
     }
 
     // **** Setters ****
 
-    function deposit() public override {
+    function deposit(uint256 _amount) internal override {
         require(emergencyStatus == false, "emergency withdrawal in process");
-        uint256 _want = IERC20(want).balanceOf(address(this));
-        if (_want > 0) {
+        if (_amount > 0) {
             IERC20(want).safeApprove(rewards, 0);
-            IERC20(want).safeApprove(rewards, _want);
-            IMasterChef(rewards).deposit(poolId, _want);
+            IERC20(want).safeApprove(rewards, _amount);
+            IMasterChef(rewards).deposit(poolId, _amount);
         }
+    }
+
+    function jarDeposit(uint256 _amount) external nonReentrant {
+        require(emergencyStatus == false, "emergency withdrawal in process");
+        require(msg.sender == jar, "!jar");
+        deposit(_amount);
     }
 
     function _withdrawSome(uint256 _amount)
@@ -235,8 +244,9 @@ abstract contract BaseStrategyMasterChef is BaseStrategy, ReentrancyGuard {
         override
         returns (uint256)
     {
+        uint256 _before = IERC20(want).balanceOf(address(this));
         IMasterChef(rewards).withdraw(poolId, _amount);
-        return _amount;
+        return _before.sub(IERC20(want).balanceOf(address(this)));
     }
 
     /* **** Other Mutative functions **** */
@@ -249,7 +259,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy, ReentrancyGuard {
 
     // **** Admin functions ****
 
-    function salvage(address token) public onlyOwner {
+    function salvage(address token) external onlyOwner nonReentrant {
         require(token != want && token != harvestedToken, "cannot salvage");
 
         uint256 _token = IERC20(token).balanceOf(address(this));
@@ -258,7 +268,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy, ReentrancyGuard {
         }
     }
 
-    function emergencyWithdraw() public onlyOwner {
+    function emergencyWithdraw() external onlyOwner nonReentrant {
         IMasterChef(rewards).emergencyWithdraw(poolId);
 
         uint256 _want = IERC20(want).balanceOf(address(this));
@@ -289,7 +299,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
     address public multiHarvest = 0x0000000000000000000000000000000000000000;
 
     // Other constants
-    uint16 public constant underlyingPoolId = 1;
+    uint256 public constant underlyingPoolId = 1;
 
     // The total fee in bps that KogeFarm will take from the reward token balance
     uint256 public kogefarmFeeAmountBps = 100;
@@ -315,6 +325,8 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
             rewardTokenAddr
         )
     {
+        require(_want != feeTokenAddr, "Want token address should not be set to fee token address");
+
         rewardToFeeTokenPath = new address[](2);
         rewardToFeeTokenPath[0] = rewardTokenAddr;
         rewardToFeeTokenPath[1] = feeTokenAddr;
@@ -334,14 +346,17 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
     function set_fee(uint256 NewFee) external onlyOwner() {
         require(NewFee <= 1000, "New fee must be less than 1000 bps");
         kogefarmFeeAmountBps = NewFee;
+        emit SetFee(NewFee);
     }
     function set_multiHarvest(address newHarvest) external onlyOwner() {
         multiHarvest = newHarvest;
+        emit SetMultiHarvest(newHarvest);
     }
 
     function set_harvestCutoff(uint256 newCutoff) external onlyOwner() {
-        require(newCutoff <= 10**18, "New cutoff must be less than 1 Titan");
+        require(newCutoff <= 10**18, "New cutoff must be less than 10**18");
         harvestCutoffBps = newCutoff;
+        emit SetHarvestCutoff(harvestCutoffBps);
     }
 
     function calculateSwapAmount(address _tokenToSwap, uint256 _bps) internal view returns (uint256) {
@@ -354,7 +369,7 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
         uint256 _feeAmount = _rewardBalance.mul(kogefarmFeeAmountBps).div(10000);
         // Swap reward token for fee token using the fee token router
         if(rewardTokenAddr != feeTokenAddr) {
-            _swapUniswapWithPath(rewardToFeeTokenPath, _feeAmount, feeTokenRouterAddr);
+            _swapUniswapWithPathForFeeOnTransferTokens(rewardToFeeTokenPath, _feeAmount, feeTokenRouterAddr);
             // Figure out how much we now have as a fee token
             _feeAmount = IERC20(feeTokenAddr).balanceOf(address(this));
         }
@@ -382,16 +397,20 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
             // Calculate the amount to swap for the farm token.
             swapAmount = calculateSwapAmount(rewardTokenAddr,5000);
             // Swap the required amount of reward token using the designated swap path
-            _swapUniswapWithPath(rewardToFarmTokenPath0, swapAmount, swapRouter0Addr);
+            _swapUniswapWithPathForFeeOnTransferTokens(rewardToFarmTokenPath0, swapAmount, swapRouter0Addr);
             // Calculate the amount to swap for the farm token.
             swapAmount = calculateSwapAmount(rewardTokenAddr,10000);
             // Swap the required amount of reward token using the designated swap path
-            _swapUniswapWithPath(rewardToFarmTokenPath1, swapAmount, swapRouter1Addr);
+            _swapUniswapWithPathForFeeOnTransferTokens(rewardToFarmTokenPath1, swapAmount, swapRouter1Addr);
             // Add liquidity
             _addLiquidityToDex(farmToken0Addr,farmToken1Addr,farmTokenRouterAddr);
             // Stake the LP tokens
-            deposit();
+            uint256 _want = IERC20(want).balanceOf(address(this));
+            deposit(_want);
         }
+        
+        // Emit event
+        emit Harvested(msg.sender);
     }
 
 }
