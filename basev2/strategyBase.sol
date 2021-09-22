@@ -246,7 +246,7 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
     {
         uint256 _before = IERC20(want).balanceOf(address(this));
         IMasterChef(rewards).withdraw(poolId, _amount);
-        return _before.sub(IERC20(want).balanceOf(address(this)));
+        return IERC20(want).balanceOf(address(this)).sub(_before);
     }
 
     /* **** Other Mutative functions **** */
