@@ -9,7 +9,6 @@ import "./interfaces/IStrategy.sol";
 
 /**
 // OpenZeppelin pausable: https://github.com/ConsenSysMesh/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol
-
  * @title Pausable
  * @dev Base contract which allows children to implement an emergency stop mechanism.
  */
@@ -63,7 +62,14 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
 
     IERC20 public immutable token;
     address public immutable strategy;
-    mapping (address => uint256) private lastTimeStaked;
+    
+    struct UserInfo {
+        uint256 lastTimeStaked;     // How many LP tokens the user has provided.
+        uint256 lastAmountStaked; // Reward debt. See explanation below.
+    }
+
+    mapping (address => UserInfo) public userInfo;
+    
     uint256 public constant keepMax = 10000;
 
     event Deposit(address indexed _from, uint256 _value);
@@ -102,7 +108,6 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
     }
 
     function deposit(uint256 _amount) public nonReentrant whenNotPaused onlyEOA {
-        lastTimeStaked[msg.sender] = now;
 
         IStrategy(strategy).harvest();
         
@@ -113,13 +118,13 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
         uint256 _before = token.balanceOf(strategy);
         token.safeTransferFrom(msg.sender, strategy, _amount);
         uint256 _after = token.balanceOf(strategy);
-        uint256 _toDeposit = _before.sub(_after); // Additional check for deflationary tokens or deposit fees
+        uint256 _toDeposit = _after.sub(_before); // Additional check for deflationary tokens or deposit fees
         
         // Stake and calculate pool balance after
         IStrategy(strategy).jarDeposit(_toDeposit);
         uint256 _afterPool = balance();
-        uint256 _newStaked = _pool - _afterPool;
-    
+        uint256 _newStaked = _afterPool.sub(_pool);
+        
         // Compute share
         uint256 shares = 0;
         if (totalSupply() == 0) {
@@ -127,10 +132,15 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
         } else {
             shares = (_newStaked.mul(totalSupply())).div(_pool);
         }
-
+    
         // Send share of pool
         _mint(msg.sender, shares);
         
+        // Save last time/amount staked
+        UserInfo storage user = userInfo[msg.sender];
+        user.lastAmountStaked = balanceOf(msg.sender).mul(_afterPool).div(totalSupply());
+        user.lastTimeStaked = now;
+
         // Emit event
         emit Deposit(msg.sender, _amount);
     }
@@ -171,10 +181,7 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
         return balance().mul(1e18).div(totalSupply());
     }
 
-    //Get last time staked
-    function getLastTimeStaked(address _address) external view returns (uint256) {
-        return lastTimeStaked[_address];
-    }
+
 }
 
 
