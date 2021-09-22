@@ -20,6 +20,4 @@ interface IJar is IERC20 {
     function strategy() external view returns (address);
 
     function decimals() external view returns (uint8);
-
-    function getLastTimeStaked(address _address) external view returns (uint256);
 }
