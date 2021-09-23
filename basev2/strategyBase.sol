@@ -15,7 +15,7 @@ abstract contract BaseStrategy is Ownable, ReentrancyGuard {
 
     // Tokens
     address public immutable want; //The LP token, Harvest calls this "rewardToken"
-    address public immutable harvestedToken; //The token we harvest, will add support for multiple tokens in v2
+    address public immutable harvestedToken; //The token we harvest
 
     // User accounts
     address public strategist; //The address the performance fee is sent to
@@ -234,7 +234,6 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
     }
 
     function jarDeposit(uint256 _amount) external nonReentrant {
-        require(emergencyStatus == false, "emergency withdrawal in process");
         require(msg.sender == jar, "!jar");
         deposit(_amount);
     }
@@ -354,7 +353,6 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
     }
 
     function set_harvestCutoff(uint256 newCutoff) external onlyOwner() {
-        require(newCutoff <= 10**18, "New cutoff must be less than 10**18");
         harvestCutoffBps = newCutoff;
         emit SetHarvestCutoff(harvestCutoffBps);
     }
