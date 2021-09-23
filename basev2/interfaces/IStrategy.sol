@@ -11,8 +11,6 @@ interface IStrategy {
 
     function jarDeposit(uint256) external;
 
-    function underlyingPoolId() external view returns(uint16);
-
     function withdraw(uint256) external;
 
     function withdrawAll() external returns (uint256);
