@@ -71,6 +71,7 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
     mapping (address => UserInfo) public userInfo;
     
     uint256 public constant keepMax = 10000;
+    uint256 public constant maxDepositFeeMC = 1000;
 
     event Deposit(address indexed _from, uint256 _value);
     event Withdraw(address indexed _from, uint256 _value);
@@ -102,7 +103,7 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
                 IStrategy(strategy).balanceOf()
             );
     }
-
+    
     function depositAll() external {
         deposit(token.balanceOf(msg.sender));
     }
@@ -124,6 +125,10 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
         IStrategy(strategy).jarDeposit(_toDeposit);
         uint256 _afterPool = balance();
         uint256 _newStaked = _afterPool.sub(_pool);
+        
+        // Require deposit fee to be within reasonable bounds
+        uint256 maxDepositFee = _amount.mul(maxDepositFeeMC).div(keepMax);
+        require(_newStaked.add(maxDepositFee) >= _amount, "!MC DEPOSIT FEE");
         
         // Compute share
         uint256 shares = 0;
