@@ -62,6 +62,7 @@ abstract contract BaseStrategy is Ownable, ReentrancyGuard {
     }
 
     function setStrategist(address _strategist) external onlyOwner {
+        require(_strategist != address(0));
         strategist = _strategist;
         emit SetStrategist(_strategist);
     }
@@ -196,6 +197,8 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
     event SetMultiHarvest(address indexed _to);
     event SetHarvestCutoff(uint256 value);
     event Harvested(address indexed _from);
+    event Salvage(address indexed token);
+    event EmergencyWithdraw();
 
     constructor(
         address _rewards,
@@ -265,17 +268,21 @@ abstract contract BaseStrategyMasterChef is BaseStrategy {
         if (_token > 0) {
             IERC20(token).safeTransfer(msg.sender, _token);
         }
+        
+        emit Salvage(token);
     }
 
     function emergencyWithdraw() external onlyOwner nonReentrant {
+        emergencyStatus = true;
+
         IMasterChef(rewards).emergencyWithdraw(poolId);
 
         uint256 _want = IERC20(want).balanceOf(address(this));
         if (_want > 0) {
             IERC20(want).safeTransfer(jar, _want);
         }
-
-        emergencyStatus = true;
+        
+        emit EmergencyWithdraw();
     }
 }
 
@@ -377,8 +384,10 @@ abstract contract StrategyFarmTwoAssets is BaseStrategyMasterChef {
 
     //Harvest rewards and re-deposit into farm
     function harvest() public override nonReentrant {
-        //prevent unauthorized smart contracts from calling harvest()
+        // prevent unauthorized smart contracts from calling harvest()
         require(msg.sender == tx.origin || msg.sender == owner() || msg.sender == strategist || msg.sender == multiHarvest || msg.sender == jar, "not authorized");
+        // prevent harvesting during emergency withdraw
+        require(emergencyStatus == false, "emergency withdrawal in process");
 
         // Collects reward tokens
         _getReward();
