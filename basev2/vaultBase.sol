@@ -175,7 +175,7 @@ abstract contract JarBase is ERC20, Ownable, Pausable, ReentrancyGuard {
         token.safeTransfer(msg.sender, r);
 
         // Emit event
-        emit Withdraw(msg.sender, _shares);
+        emit Withdraw(msg.sender, r);
     }
 
     // A view function that makes it easier for the UI to display LPs of users
