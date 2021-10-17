@@ -1,0 +1,74 @@
+[
+    {
+        "vault": "0xc8A4D5611F31f943eC22cd07C7078b7E4d4B9161",
+        "__comment": "Beethoven-X Beets-USDC LP"
+    },
+    {
+        "vault": "0xC9f625e17650F69CA877f016aa2e9BfEC17D3Ed5",
+        "__comment": "Beethoven-X Beets-wFTM LP"
+    },
+    {
+        "vault": "0x7F5Fd897a936A9E4D40C2560c45f5600a43cb409",
+        "__comment": "Beethoven-X Mai-USDC LP"
+    },
+    {
+        "vault": "0xdFdd4e400B429979b774F8f0a1d106A3448350bC",
+        "__comment": "Beethoven-X wFTM-BTC-ETH LP"
+    },
+    {
+        "vault": "0xf58d2F9A4c1F6b469Df1E77DAD99C0B99e82a722",
+        "__comment": "Beethoven-X wFTM-Sonata"
+    },
+    {
+        "vault": "0x380DF95878feF749b19E468Ef4C1698a224a8990",
+        "__comment": "Beethoven-X USDC-Eth LP"
+    },
+    {
+        "vault": "0x451918789b42814A314Ea2856d94E4ddB4d3430f",
+        "__comment": "Beethoven-X BTC-USDC LP"
+    },
+    {
+        "vault": "0xb7F0b6d865B187D6E8d0FF734D4c6d616650C705",
+        "__comment": "Beethoven-X BTC-Eth-USDC LP"
+    },
+    {
+        "vault": "0x184E361C92157bd44A28B6C4bC069588Ec0E97E2",
+        "__comment": "Beethoven-X USDC-FTM LP"
+    },
+    {
+        "vault": "0xE60Ff9b586E645F80Cd761890F0C548B512A55b2",
+        "__comment": "Beethoven-X MIM-fUSDT-USDC LP"
+    },
+    {
+        "vault": "0x0a5E266afB071CB0F69310706154F2893a208D1c",
+        "__comment": "Abracadabra MIM-fUSDT-USDC LP"
+    },
+    {
+        "vault": "0xD1FDFB2BE4fd5e7Ee5b9D6E91538b2cf073B8AA2",
+        "__comment": "SpiritSwap USDC-FTM LP"
+    },
+    {
+        "vault": "0xc447E9a3fFbCa924Aa8CF9A2301975515DaE9661",
+        "__comment": "SpiritSwap fUSDT-FTM LP"
+    },
+    {
+        "vault": "0xfF3349c817B795a0A44c74B823a765B31C226038",
+        "__comment": "SpiritSwap MIM-FTM LP"
+    },
+    {
+        "vault": "0x02bc4F42b998FC23355c780A756446d9998d78dE",
+        "__comment": "SpiritSwap LINK-FTM LP"
+    },
+    {
+        "vault": "0xB49fecd52B88EFA8248BF2408e4ff08EaFC85b91",
+        "__comment": "SpiritSwap CRV-FTM LP"
+    },
+    {
+        "vault": "0xFc68488ca2DdEBBdcd980AafDde2E3374F5AD222",
+        "__comment": "SpiritSwap ICE-FTM LP"
+    },
+    {
+        "vault": "0x5a94Fd3A5D58fbB97F817223aA2Ea6773fE7dA57",
+        "__comment": "SpiritSwap SPELL-fUSDT LP"
+    }
+]
