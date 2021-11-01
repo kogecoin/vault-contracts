@@ -1,15 +1,23 @@
 [
     {
+        "vault": "0x632918CE1c5D93E7CB7622e07e3934c24054a8dd",
+        "__comment": "TombFinance TSHARE-FTM LP"
+    },
+    {
+        "vault": "0x234765DDD45c287d0565AAb4277f7ceE6Ed3BC4f",
+        "__comment": "TombFinance TOMB-FTM LP"
+    },
+    {
+        "vault": "0x80C8513190D237455FEe3bFC4eeaaE6c15627606",
+        "__comment": "Geist Geist-FTM LP"
+    },
+    {
         "vault": "0xc8A4D5611F31f943eC22cd07C7078b7E4d4B9161",
         "__comment": "Beethoven-X Beets-USDC LP"
     },
     {
         "vault": "0xC9f625e17650F69CA877f016aa2e9BfEC17D3Ed5",
         "__comment": "Beethoven-X Beets-wFTM LP"
-    },
-    {
-        "vault": "0x7F5Fd897a936A9E4D40C2560c45f5600a43cb409",
-        "__comment": "Beethoven-X Mai-USDC LP"
     },
     {
         "vault": "0xdFdd4e400B429979b774F8f0a1d106A3448350bC",
@@ -38,6 +46,54 @@
     {
         "vault": "0xE60Ff9b586E645F80Cd761890F0C548B512A55b2",
         "__comment": "Beethoven-X MIM-fUSDT-USDC LP"
+    },
+    {
+        "vault": "0x7D9F24523C73C46fB333777cF9688AF1AeA0Eb03",
+        "__comment": "Beethoven-X DanceOfDegens LP"
+    },
+    {
+        "vault": "0x5751834D7e49863De62F545eb3283850D3ecf8Ec",
+        "__comment": "Beethoven-X TheMagicTouch LP"
+    },
+    {
+        "vault": "0x7F5Fd897a936A9E4D40C2560c45f5600a43cb409",
+        "__comment": "Beethoven-X Mai-USDC LP"
+    },
+    {
+        "vault": "0x9d0476F35f73d1D5bDB45CF64CFF2c32ec3Fa3a0",
+        "__comment": "Beethoven-X Mai-Dai-USDC LP"
+    },
+    {
+        "vault": "0x12FEFE92fd9c6d3F9DcF8bE4978F84ac90048A9F",
+        "__comment": "Beethoven-X FantomConservatory LP"
+    },
+    {
+        "vault": "0xe35369AEb6A09675DFb3c30A98ebFfA71EF439a4",
+        "__comment": "Beethoven-X LateQuartet LP"
+    },
+    {
+        "vault": "0xfA31a189709262E70AC42CD71d3795a58473e321",
+        "__comment": "SpookySwap FTM-BOO LP"
+    },
+    {
+        "vault": "0x6642617882Db7218770E9b13F57eE4c6207F175b",
+        "__comment": "SpookySwap USDC-FTM LP"
+    },
+    {
+        "vault": "0x1F6c36C8a3a68D8a2B5C5Dee7f69dbB918995F30",
+        "__comment": "SpookySwap FTM-WETH LP"
+    },
+    {
+        "vault": "0x0E441af528EE6e503FD8F48F46F9F24121b7A139",
+        "__comment": "SpookySwap BTC-ETH LP"
+    },
+    {
+        "vault": "0xF39D5F51e6Fef3E7D906DCbBE9A48E4e4dEdd795",
+        "__comment": "SpookySwap FTM-BTC LP"
+    },
+    {
+        "vault": "0x75EA68202F413dc357180Ff72FE547Bf9442bFB5",
+        "__comment": "SpookySwap FTM-DAI LP"
     },
     {
         "vault": "0x0a5E266afB071CB0F69310706154F2893a208D1c",
@@ -70,5 +126,9 @@
     {
         "vault": "0x5a94Fd3A5D58fbB97F817223aA2Ea6773fE7dA57",
         "__comment": "SpiritSwap SPELL-fUSDT LP"
+    },
+    {
+        "vault": "0x7641b2dF3d37fE5007EE09d7e21294c0E2c4c342",
+        "__comment": "SpiritSwap MIM-wMEMO LP"
     }
 ]
