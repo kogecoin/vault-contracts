@@ -1,21 +1,5 @@
 [
     {
-        "vault": "0x39109Dd55Ed30fAd5aF63C8C79Bb5A8BB65e94C1",
-        "__comment": "Huckleberry MOVR-FINN LP"
-    },
-    {
-        "vault": "0x98ec2A4afEe2578eF95421D6Ff699A247304D1F3",
-        "__comment": "Huckleberry USDC-FINN LP"
-    },
-    {
-        "vault": "0xB1d3857e4435199cD6Bae09F6eCa346355BDbE12",
-        "__comment": "Huckleberry DOT-FINN LP"
-    },
-    {
-        "vault": "0x33D33ac00877012943f850026E0aa2D6a0A3a629",
-        "__comment": "Huckleberry XRP-FINN LP"
-    },
-    {
         "vault": "0x0a5E266afB071CB0F69310706154F2893a208D1c",
         "__comment": "SolarBeam Solar-Movr LP"
     },
@@ -70,5 +54,41 @@
     {
         "vault": "0xa70c8268152D2B06E2313de2273F82D9B031b35a",
         "__comment": "SolarBeam FTM-MOVR LP"
+    },
+    {
+        "vault": "0x39109Dd55Ed30fAd5aF63C8C79Bb5A8BB65e94C1",
+        "__comment": "Huckleberry MOVR-FINN LP"
+    },
+    {
+        "vault": "0x98ec2A4afEe2578eF95421D6Ff699A247304D1F3",
+        "__comment": "Huckleberry USDC-FINN LP"
+    },
+    {
+        "vault": "0xB1d3857e4435199cD6Bae09F6eCa346355BDbE12",
+        "__comment": "Huckleberry DOT-FINN LP"
+    },
+    {
+        "vault": "0x33D33ac00877012943f850026E0aa2D6a0A3a629",
+        "__comment": "Huckleberry XRP-FINN LP"
+    },
+    {
+        "vault": "0xfC4246D4B4973d3BF7C3A1e4C16df76fe3fD1dA0",
+        "__comment": "Huckleberry AVAX-FINN LP"
+    },
+    {
+        "vault": "0xb5f2f033113f8fa4f5Fe4BEd535e05ee308bcAbE",
+        "__comment": "Huckleberry USDC.m-USDT.m LP"
+    },
+    {
+        "vault": "0xB816402B0EA623Fa669f59EE4F429BB9a919027e",
+        "__comment": "Huckleberry USDT.m-MOVR LP"
+    },
+    {
+        "vault": "0xaBd70eaEB9C0bb58b9b83A102E309ac764fd8801",
+        "__comment": "Huckleberry ETH.m-MOVR LP"
+    },
+    {
+        "vault": "0x6FC9F91C3db0190184849fF8d7C92E7d35158F2e",
+        "__comment": "Huckleberry BTC.m-MOVR LP"
     }
 ]
