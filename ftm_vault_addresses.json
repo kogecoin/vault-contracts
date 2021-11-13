@@ -92,10 +92,6 @@
     "__comment": "Curve USDC-Dai LP"
   },
   {
-    "vault": "0x68B9F58dfB5a7EFfD6ec9a6789E03BB9562aF4aD",
-    "__comment": "Curve Dai-USDC-USDT LP"
-  },
-  {
     "vault": "0xfA31a189709262E70AC42CD71d3795a58473e321",
     "__comment": "SpookySwap FTM-BOO LP"
   },
