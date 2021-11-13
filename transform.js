@@ -689,6 +689,38 @@ function getVaults() {
     },
 
     {
+        pid: 75,
+        lpSymbol: 'Dai-USDC-USDT LP',
+        lpAddresses: {
+            80001: '',
+            250: '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F',
+        },
+        masterChefAddresses: {
+            80001: '',
+            250: '0xd4F94D0aaa640BBb72b5EEc2D85F6D114D81a88E',
+        },
+        masterChefPid: 0,
+        jarAddresses: {
+            80001: '',
+            250: '0x68B9F58dfB5a7EFfD6ec9a6789E03BB9562aF4aD',
+        },
+
+
+
+
+        rewardPerBlock1: 0.179, // 0.179
+        rewardPerBlock2: 0.024,
+        poolWeightDesignate: 1,
+        minutesPerCompound: 60,
+        kogefarmFee: 0.01,
+        underlyingWebsite: 'https://ftm.curve.fi/',
+        platform: 'Curve',
+        isCurveFtm: true,
+        kogefarmComment: 'Curve Geist',
+        createdAt: "2021/11/07"
+    },
+
+    {
         pid: 53,
         lpSymbol: 'FTM-BOO LP',
         lpAddresses: {
