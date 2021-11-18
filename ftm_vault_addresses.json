@@ -1,5 +1,21 @@
 [
   {
+    "vault": "0x68B9F58dfB5a7EFfD6ec9a6789E03BB9562aF4aD",
+    "__comment": "Curve Dai-USDC-USDT LP"
+  },
+  {
+    "vault": "0x4Ef103DF324b20604e13170377233DDecD15074B",
+    "__comment": "Curve USDC-Dai LP"
+  },
+  {
+    "vault": "0xEb4419dBbAFa8885d30994E47e922afbE7eecB4B",
+    "__comment": "Curve Btc-renBTC LP"
+  },
+  {
+    "vault": "0x24700792EBCB57859833b8C27A114e569DBC3786",
+    "__comment": "Curve Tricrypto LP"
+  },
+  {
     "vault": "0x632918CE1c5D93E7CB7622e07e3934c24054a8dd",
     "__comment": "TombFinance TSHARE-FTM LP"
   },
@@ -86,14 +102,6 @@
   {
     "vault": "0x6dF8d03066E321508f59A6eA6373C17e91371fA4",
     "__comment": "Beethoven-X USDC-Dai LP"
-  },
-  {
-    "vault": "0x4Ef103DF324b20604e13170377233DDecD15074B",
-    "__comment": "Curve USDC-Dai LP"
-  },
-  {
-    "vault": "0x68B9F58dfB5a7EFfD6ec9a6789E03BB9562aF4aD",
-    "__comment": "Curve Dai-USDC-USDT LP"
   },
   {
     "vault": "0xfA31a189709262E70AC42CD71d3795a58473e321",
@@ -190,5 +198,9 @@
   {
     "vault": "0x7641b2dF3d37fE5007EE09d7e21294c0E2c4c342",
     "__comment": "SpiritSwap MIM-wMEMO LP"
+  },
+  {
+    "vault": "0x9D26e1fb94Dc683F578678cfAC877Cd4ac9124E7",
+    "__comment": "SpiritSwap Spell-sSpell LP"
   }
 ]
