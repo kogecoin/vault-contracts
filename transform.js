@@ -42,9 +42,9 @@ function getVaults() {
 
 
 
-        rewardPerBlockA: 0.585, // 0.585
-        rewardPerBlockB: 0.8592, // 0.8592
-        rewardPerBlockC: 0.1875,
+        rewardPerBlockA: 0.61, // 0.61
+        rewardPerBlockB: 0.6380, // 0.6380
+        rewardPerBlockC: 0.1875, // 0.1875
         poolWeightDesignate: 1,
         minutesPerCompound: 60,
         kogefarmFee: 0.01,
@@ -340,7 +340,7 @@ function getVaults() {
 
 
           rewardPerBlock: 5.02 * 2 / 1.03, // 0.625
-          poolWeightDesignate: 28 / 830,
+          poolWeightDesignate: 8 / 830,
           minutesPerCompound: 60,
           kogefarmFee: 0.01,
           underlyingWebsite: 'https://app.beethovenx.io/#/farm',
@@ -463,6 +463,35 @@ function getVaults() {
           platform: 'Beethoven-X',
           isBeethoven: true,
           createdAt: "2021/10/20",
+      },
+
+      {
+          pid: 79,
+          lpSymbol: 'FTM-Dai LP',
+          lpAddresses: {
+              80001: '',
+              250: '0x63386eF152E1Ddef96c065636D6cC0165Ff33291',
+          },
+          masterChefAddresses: {
+              80001: '',
+              250: '0x8166994d9ebBe5829EC86Bd81258149B87faCfd3',
+          },
+          masterChefPid: 23,
+          jarAddresses: {
+              80001: '',
+              250: '0x54d863a6dA9489d809581947C1305384e4D9F420',
+          },
+
+
+
+          rewardPerBlock: 5.02 * 2 / 1.03, // 0.625
+          poolWeightDesignate: 20 / 830,
+          minutesPerCompound: 60,
+          kogefarmFee: 0.029,
+          underlyingWebsite: 'https://app.beethovenx.io/#/farm',
+          platform: 'Beethoven-X',
+          isBeethoven: true,
+          createdAt: "2021/11/24",
       },
 
       {

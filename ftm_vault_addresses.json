@@ -60,6 +60,10 @@
     "__comment": "Beethoven-X USDC-FTM LP"
   },
   {
+    "vault": "0x54d863a6dA9489d809581947C1305384e4D9F420",
+    "__comment": "Beethoven-X FTM-Dai LP"
+  },
+  {
     "vault": "0xE60Ff9b586E645F80Cd761890F0C548B512A55b2",
     "__comment": "Beethoven-X MIM-fUSDT-USDC LP"
   },
