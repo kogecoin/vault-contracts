@@ -16,6 +16,14 @@
     "__comment": "Curve BTC-renBTC"
   },
   {
+    "vault": "0xE8B31C01753AA167F99bCbbEC5127ee8169C1D71",
+    "__comment": "Stargate S*USDC"
+  },
+  {
+    "vault": "0x89DEe009d840DD06427B937E978077E63405d95c",
+    "__comment": "Stargate S*USDT"
+  },
+  {
     "vault": "0x4792b5943a05fc6AF3B20B5F1D1d7dDe33C42980",
     "__comment": "Polysage SAGE-KOGE"
   },
