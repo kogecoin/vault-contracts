@@ -8,10 +8,6 @@
     "__comment": "Sushiswap ETH-BNB LP"
   },
   {
-    "vault": "0x38Da7A3a1EAE070Ade6768DCcAD7a9A9a7FFaf73",
-    "__comment": "Sushiswap USDT-ETH LP"
-  },
-  {
     "vault": "0x62cbB73a0AaA2009f325dc5ca940cB50bC28FFB8",
     "__comment": "Sushiswap USDC-USDT LP"
   },
