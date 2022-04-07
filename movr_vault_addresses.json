@@ -40,28 +40,8 @@
     "__comment": "SolarBeam USDC-Dai LP"
   },
   {
-    "vault": "0xFA45b55c3a2bA74B9De476FC01658F9352209390",
-    "__comment": "SolarBeam BUSD-USDC LP"
-  },
-  {
-    "vault": "0x31645AEFBCF37127f511b7BD9A7bfdA7427AeF8e",
-    "__comment": "SolarBeam USDC-USDT LP"
-  },
-  {
-    "vault": "0xA1d30Bee6896e07B8713E73b56A6c35a559DEa50",
-    "__comment": "SolarBeam Mai-USDC LP"
-  },
-  {
-    "vault": "0xAc6DebA557fbeb17de8E0F88bFE92eAB54724018",
-    "__comment": "SolarBeam MIM-USDC LP"
-  },
-  {
     "vault": "0xB31E2E391251705b53983221AAB3fdB0c728C51f",
     "__comment": "SolarBeam USDC-ETH LP"
-  },
-  {
-    "vault": "0x6948E97d777Ea8EfD756dFa5E679C0D9be3A4E14",
-    "__comment": "SolarBeam BNB-BUSD LP"
   },
   {
     "vault": "0x02C4B3a6FF8b187fb381CD3461229e2c77E0B5f9",
