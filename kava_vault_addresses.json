@@ -1,0 +1,14 @@
+[
+  {
+    "vault": "0x38a4ec6D6785F7470e2AD64783a58B1D04e7b263",
+    "__comment": "Ruby Finance wKava"
+  },
+  {
+    "vault": "0x5Df309E6C22Ad6D78685c321Df5582B9C4D61492",
+    "__comment": "Ruby Finance Ruby-Kava LP"
+  },
+  {
+    "vault": "0x2225BDc3b28eb3De0957Cd478EeDf92267896e56",
+    "__comment": "Ruby Finance RShare-Kava LP"
+  }
+]
