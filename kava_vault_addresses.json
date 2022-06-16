@@ -10,5 +10,9 @@
   {
     "vault": "0x2225BDc3b28eb3De0957Cd478EeDf92267896e56",
     "__comment": "Ruby Finance RShare-Kava LP"
+  },
+  {
+    "vault": "0x612c7061E2513beDAB16cd4747E1ac1E825C4F28",
+    "__comment": "Ruby Finance RShare-Ruby LP"
   }
 ]
