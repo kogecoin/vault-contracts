@@ -4,24 +4,100 @@
     "__comment": "KogeFarm KogeCoin"
   },
   {
+    "vault": "0xb6D7bA013e13C3f00a20826aF2008C83228eD50a",
+    "__comment": "KogeFarm DAO KogeCoin"
+  },
+  {
+    "vault": "0x84a9c05b9F52FfD041eA1cFD6f56031d50DECc5c",
+    "__comment": "KogeFarm DAO KogeCoin-Matic"
+  },
+  {
+    "vault": "0xECbCe31d1723611Db11358a186B9328ce65D78cc",
+    "__comment": "Curve DAI-USDC-USDT"
+  },
+  {
     "vault": "0x4a93D6b394Da4c1e6e436e9370E5DF08A45377a8",
     "__comment": "Curve DAI-USDC-USDT"
+  },
+  {
+    "vault": "0x34F0B8B2c3A82BCcb91dcA4Fc45EC8dC78132ccB",
+    "__comment": "Curve atricrypto3"
   },
   {
     "vault": "0x8402c67fC92691c745E0Bbbe4989eB07Bc02c335",
     "__comment": "Curve atricrypto3"
   },
   {
+    "vault": "0xB608A48aa322F2541bD65449148147c3935EBc5e",
+    "__comment": "Curve BTC-renBTC"
+  },
+  {
     "vault": "0x69aAF33Cd4bd6Cbd3Ef275f8Ddc3342e0365F083",
     "__comment": "Curve BTC-renBTC"
+  },
+  {
+    "vault": "0x81D61D56A19469259cDA912b5d1Eb0DCA6199A87",
+    "__comment": "QuickSwap TUSD-USDC"
+  },
+  {
+    "vault": "0x36CB30b0223C16B7275A3C3641b7b5D5ad1433CB",
+    "__comment": "QuickSwap ETH-cxETH"
+  },
+  {
+    "vault": "0x0051eCd6C71307313fd494e486E5d3bEfDa5CD04",
+    "__comment": "QuickSwap Matic-MaticX"
+  },
+  {
+    "vault": "0xDc067a54161B9200d97CBEB84D983ca4Ee284d0A",
+    "__comment": "QuickSwap BTC-cxBTC"
+  },
+  {
+    "vault": "0x54A6ebb2f616e7a8C12f53D39Fc7AC1dD4f0C4F3",
+    "__comment": "QuickSwap Matic-stMatic"
+  },
+  {
+    "vault": "0xCbfF2Efd73C3b3fd86130aE295d27017De16E025",
+    "__comment": "QuickSwap USDC-Eth LP"
+  },
+  {
+    "vault": "0xF0Ad1b426bb081D67533b76DC0efc8b0Fb08F826",
+    "__comment": "QuickSwap USDT-Eth LP"
+  },
+  {
+    "vault": "0xaB6707A9A19965594334Ec334cC82213D796f02B",
+    "__comment": "QuickSwap Dai-Eth LP"
+  },
+  {
+    "vault": "0x8B74b3F6ad25F8d55f272115AE7e83649Bcf1E50",
+    "__comment": "QuickSwap Quick(New)-Matic LP"
   },
   {
     "vault": "0xE8B31C01753AA167F99bCbbEC5127ee8169C1D71",
     "__comment": "Stargate S*USDC"
   },
   {
-    "vault": "0x644799c6E671A940fed583095cc0545BfF6F8841",
+    "vault": "0xb17372A7BD7e76aa009Bd5062B42a5C0A88638b3",
     "__comment": "Stargate S*USDT"
+  },
+  {
+    "vault": "0x5CEE9B233EACa8d93C2038D229EBb6670E8581BF",
+    "__comment": "QuickSwap Eth-Matic LP"
+  },
+  {
+    "vault": "0xd5E3Dc5e2de2fCa311150164258c093EF5EcAC3F",
+    "__comment": "QuickSwap Usdc-Matic LP"
+  },
+  {
+    "vault": "0xd1C7962b4D007E10adb1bF977185dCA6f5A6fE9C",
+    "__comment": "QuickSwap Quick-Matic LP"
+  },
+  {
+    "vault": "0xAE2cb3830d7617f865b520bEB7d2fca3e37cFE51",
+    "__comment": "QuickSwap USDT-Matic LP"
+  },
+  {
+    "vault": "0x28c6c6e459E8e6AF7f8C9d61D7d4C3932854b8f3",
+    "__comment": "Gains Network GNS-Dai"
   },
   {
     "vault": "0x4792b5943a05fc6AF3B20B5F1D1d7dDe33C42980",
@@ -76,18 +152,6 @@
     "__comment": "QuickSwap MAI-USDT LP"
   },
   {
-    "vault": "0xCF6081788AFa655705078D8371c1E6A08B7C6619",
-    "__comment": "QuickSwap MAI-Dai LP"
-  },
-  {
-    "vault": "0x928aC990A5A9471DA5f05A27211613aA5c75DD3c",
-    "__comment": "QuickSwap MAI-Matic LP"
-  },
-  {
-    "vault": "0xAD37B0Be3164a85C6Ffc48fEc9D722756C000AE6",
-    "__comment": "QuickSwap Qi-Eth LP"
-  },
-  {
     "vault": "0x4aF74D22399DFcaD732A5504aa2E2c13b25303f4",
     "__comment": "QuickSwap PolyDoge-Quick LP"
   },
@@ -102,10 +166,6 @@
   {
     "vault": "0x42064982010d0881c7A6BC89D83B32309bd17a99",
     "__comment": "Qi Dao Qi-Matic"
-  },
-  {
-    "vault": "0x303e9A0247edA5C958c07b87Bdc985d0eDeab83B",
-    "__comment": "PolyDogeDao pdDollar-Matic LP"
   },
   {
     "vault": "0xec05278322536650D3671D58672AC1B856cbc5f5",
@@ -126,10 +186,6 @@
   {
     "vault": "0xA1e13449EA8218Ab2e3ea0CF841d39A61b2024D9",
     "__comment": "PolyPup Bone-USDC LP"
-  },
-  {
-    "vault": "0xd9bea4230Be112D900B493F6a772b1E769eCC7B8",
-    "__comment": "PolyPup Pup-USDC LP"
   },
   {
     "vault": "0x2002ac0EE6Fb936d5F0d52ACebAB581a3dF5F971",
@@ -204,10 +260,6 @@
     "__comment": "TamagoSwap TMGO-KogeCoin LP"
   },
   {
-    "vault": "0x09c656425B71D1459f210e250f2f2E4210DCd126",
-    "__comment": "Wault WUSD-USDC LP"
-  },
-  {
     "vault": "0xa3F49c515b3c45294D3F9B5A4525AF6223EDf954",
     "__comment": "Gravity GFI"
   },
@@ -280,12 +332,12 @@
     "__comment": "Gravity Sushi"
   },
   {
-    "vault": "0x8885A65E887E14Bd09F5112cA03D130076f65B6b",
-    "__comment": "SushiSwap USDC-BCT LP"
+    "vault": "0x8946C7a0b15a0d477A31F7cc06592cf356378D76",
+    "__comment": "SushiSwap gOHM-ETH LP"
   },
   {
-    "vault": "0xA257485D0C1A576371d6278C3B30C0A3cF6038c9",
-    "__comment": "SushiSwap BCT-KLIMA LP"
+    "vault": "0x8885A65E887E14Bd09F5112cA03D130076f65B6b",
+    "__comment": "SushiSwap USDC-BCT LP"
   },
   {
     "vault": "0x0C776471CB3Ac5be3a0e7560C7B87977a5Ac0be2",
@@ -500,18 +552,6 @@
     "__comment": "DinoSwap Dino-Weth"
   },
   {
-    "vault": "0x68C7801E2e695Ec6e25bb084064cA75F798287a2",
-    "__comment": "DinoSwap Weth-WMatic"
-  },
-  {
-    "vault": "0x1C5b8f15B2114d6A3B5DDf83432908fDc7eBA2E8",
-    "__comment": "DinoSwap WMatic-USDC"
-  },
-  {
-    "vault": "0x38228F824d3B15D5f38083e89e0d2042D7955935",
-    "__comment": "DinoSwap USDC-USDT"
-  },
-  {
     "vault": "0xE0011c255B8E7A5939e41913e3657D7852d50a9a",
     "__comment": "DinoSwap DNXC-USDC LP"
   },
@@ -534,14 +574,6 @@
   {
     "vault": "0xFAf49e554778e9D11F8a646679fDBf406B871556",
     "__comment": "DinoSwap CGG-WMatic LP"
-  },
-  {
-    "vault": "0x51e150D14C5f4Ce7b08eBd7a22A4D41ECF614614",
-    "__comment": "DinoSwap Sx-WEth LP"
-  },
-  {
-    "vault": "0x15a5d625755FC77fC0753d9F1c3e2620297273C4",
-    "__comment": "DinoSwap Sfi-WEth LP"
   },
   {
     "vault": "0x883200d4E483d01eEef2ffE96d37f9Df1E85d954",
@@ -582,10 +614,6 @@
   {
     "vault": "0xb7D3e1C5cb26D088d619525c6fD5D8DDC1B543d1",
     "__comment": "QuickSwap KogeCoin-Matic"
-  },
-  {
-    "vault": "0x2425b13B711c82E694237F852c3b1A3E50930c7C",
-    "__comment": "QuickSwap BTC-Eth"
   },
   {
     "vault": "0xE28809B6070DB755b01303d03Dc0476F49A96B17",
@@ -668,32 +696,8 @@
     "__comment": "JetSwap USDC-Dai LP"
   },
   {
-    "vault": "0x277c64Aa105bc4892280050726D3de0848b9C274",
-    "__comment": "JetSwap ETH-Matic LP"
-  },
-  {
-    "vault": "0x87EaCf1a93469CC73D1b22b3fFeb995cA9825661",
-    "__comment": "JetSwap USDC-Matic LP"
-  },
-  {
-    "vault": "0x11685B6Eb3B71E43077941Be3557048B95b96236",
-    "__comment": "JetSwap BTC-ETH LP"
-  },
-  {
-    "vault": "0x11801BfC70d6b049d81DE15b0Aa172CFe704AA09",
-    "__comment": "JetSwap BTC-USDT LP"
-  },
-  {
-    "vault": "0xACF8cEd23d13Ce791A085f573e70751c2Ba90360",
-    "__comment": "JetSwap USDT-ETH LP"
-  },
-  {
     "vault": "0xc1f26fb014eF6EAa600ba95dAa18dDb0FeFaCC91",
     "__comment": "JetSwap USDC-ETH LP"
-  },
-  {
-    "vault": "0x26637b02F9ccF6BE12b38945698251E4721F0290",
-    "__comment": "JetSwap MATIC-USDT LP"
   },
   {
     "vault": "0x41a3dDd6f2502689Bfd6170026ac45DC810E8037",

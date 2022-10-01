@@ -1,19 +1,19 @@
 [
   {
     "vault": "0x7e0aeCA18fe68B7e584984e2EcE7Acd8d5C4D044",
-    "__comment": "KPhoton-Kava LP Photonswap"
+    "__comment": "Photonswap KPhoton-Kava LP"
   },
   {
     "vault": "0xE60Ff9b586E645F80Cd761890F0C548B512A55b2",
-    "__comment": "KPhoton-USDC LP Photonswap"
+    "__comment": "Photonswap KPhoton-USDC LP"
   },
   {
     "vault": "0x2695A6Acc70802e758C4c1D547ed1604de9ffB28",
-    "__comment": "USDC-USDT LP Photonswap"
+    "__comment": "Photonswap USDC-USDT LP"
   },
   {
     "vault": "0x5263C50DFc9968aa0EC66407dAde988CDb46ADf6",
-    "__comment": "USDC-Dai LP Photonswap"
+    "__comment": "Photonswap USDC-Dai LP"
   },
   {
     "vault": "0xD62676C69a03B3e6F5c3D206Eca54892eefE21e6",
@@ -26,9 +26,5 @@
   {
     "vault": "0x2225BDc3b28eb3De0957Cd478EeDf92267896e56",
     "__comment": "Ruby Finance RShare-Kava LP"
-  },
-  {
-    "vault": "0x6948E97d777Ea8EfD756dFa5E679C0D9be3A4E14",
-    "__comment": "Ruby Finance wKava"
-  },
+  }
 ]
